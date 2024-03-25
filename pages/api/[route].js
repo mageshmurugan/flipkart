@@ -98,37 +98,41 @@ const scrapeAlternateFlipkartData = async (url) => {
 };
 
 export default async function handleFlipkartDataRequest(req, res) {
-  const searchTerm = req.body;
-  const sanitizedSearchTerm = await searchTerm.split(" ").join(" ");
-  console.log(sanitizedSearchTerm);
-  const cachedData = await redisClient.get(`${sanitizedSearchTerm}`);
+  try {
+    const searchTerm = req.query.route;
+    const sanitizedSearchTerm = await searchTerm.split(" ").join(" ");
+    console.log(sanitizedSearchTerm);
+    const cachedData = await redisClient.get(`${sanitizedSearchTerm}`);
 
-  if (cachedData) {
-    return res.status(200).json(JSON.parse(cachedData));
-    // return res.status(200).json({ message: JSON.parse(cachedData) });
-    // return res.status(200).json({ message: cachedData });
-  } else {
-    if (searchTerm !== "favicon.ico") {
-      const flipkartData = await scrapeFlipkartData(sanitizedSearchTerm);
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+      // return res.status(200).json({ message: JSON.parse(cachedData) });
+      // return res.status(200).json({ message: cachedData });
+    } else {
+      if (searchTerm !== "favicon.ico") {
+        const flipkartData = await scrapeFlipkartData(sanitizedSearchTerm);
 
-      if (flipkartData.length === 0) {
-        const alternateFlipkartData = await scrapeAlternateFlipkartData(
-          sanitizedSearchTerm
-        );
+        if (flipkartData.length === 0) {
+          const alternateFlipkartData = await scrapeAlternateFlipkartData(
+            sanitizedSearchTerm
+          );
+          redisClient.setEx(
+            sanitizedSearchTerm,
+            DEFAULT_EXPIRATION,
+            JSON.stringify(alternateFlipkartData)
+          );
+          return res.json(alternateFlipkartData);
+        }
+
         redisClient.setEx(
           sanitizedSearchTerm,
           DEFAULT_EXPIRATION,
-          JSON.stringify(alternateFlipkartData)
+          JSON.stringify(flipkartData)
         );
-        return res.json(alternateFlipkartData);
+        res.status(200).json(flipkartData);
       }
-
-      redisClient.setEx(
-        sanitizedSearchTerm,
-        DEFAULT_EXPIRATION,
-        JSON.stringify(flipkartData)
-      );
-      res.status(200).json(flipkartData);
     }
+  } catch (e) {
+    console.log(e.messaga);
   }
 }

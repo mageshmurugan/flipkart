@@ -51,10 +51,11 @@ export default function home() {
   const [loggedIn, setLoggedIn] = useState(null);
 
   async function handleSubmit() {
-    const loggedInResponse = await fetch("/api/search", {
-      method: "GET",
-      body: JSON.stringify(names.current.value.trim()),
-    });
+    const loggedInResponse = await fetch(`/api/${names.current.value.trim()}`);
+    // const loggedInResponse = await fetch("/api/search", {
+    //   method: "GET",
+    //   body: JSON.stringify(names.current.value.trim()),
+    // });
     const loggedInData = await loggedInResponse.json();
     setLoggedIn(loggedInData);
   }
