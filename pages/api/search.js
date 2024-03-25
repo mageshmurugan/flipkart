@@ -13,16 +13,8 @@ const redisClient = createClient({
     port: REDIS_PORT,
   },
 });
-// const redisClient = createClient({
-//   password: "rMhI2NH8KtS5qy4G98FGzInygHh5A0EA",
-//   socket: {
-//     host: "redis-12737.c252.ap-southeast-1-1.ec2.cloud.redislabs.com",
-//     port: 12737,
-//   },
-// });
 
 redisClient.connect();
-// console.log(process.env.REDIS_PORT);
 let page; // Declare a variable to store the page instance globally
 
 const initializePage = async () => {
