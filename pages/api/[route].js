@@ -15,10 +15,11 @@ const redisClient = createClient({
 });
 
 redisClient.connect();
+
 let page; // Declare a variable to store the page instance globally
 
 const initializePage = async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   page = await browser.newPage();
 };
 
@@ -100,6 +101,7 @@ const scrapeAlternateFlipkartData = async (url) => {
 export default async function handleFlipkartDataRequest(req, res) {
   try {
     const searchTerm = req.query.route;
+    console.log(searchTerm);
     const sanitizedSearchTerm = await searchTerm.split(" ").join(" ");
     console.log(sanitizedSearchTerm);
     const cachedData = await redisClient.get(`${sanitizedSearchTerm}`);
@@ -132,8 +134,8 @@ export default async function handleFlipkartDataRequest(req, res) {
         res.status(200).json(flipkartData);
       }
     }
-  } catch (e) {
-    console.error("Error occurred:", error);
-    res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
