@@ -52,7 +52,7 @@ export default function home() {
 
   async function handleSubmit() {
     const loggedInResponse = await fetch("/api/search", {
-      method: "POST",
+      method: "GET",
       body: JSON.stringify(names.current.value.trim()),
     });
     const loggedInData = await loggedInResponse.json();
