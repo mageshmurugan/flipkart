@@ -133,6 +133,7 @@ export default async function handleFlipkartDataRequest(req, res) {
       }
     }
   } catch (e) {
-    console.log(e.messaga);
+    console.error("Error occurred:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
